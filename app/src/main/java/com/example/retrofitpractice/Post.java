@@ -1,36 +1,66 @@
 package com.example.retrofitpractice;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
 
 public class Post {
 
-    private int userId;
-    private Integer id;
-    private String title;
-    @SerializedName("body")
-    private String text;
+    //private int userId;
+   // private Integer id;
+    @SerializedName("name")
+    private String name;
+    @SerializedName("id")
+    private String id;
+    @SerializedName("main")
+    @Expose
+    private Main main;
+    @SerializedName("weather")
+    @Expose
+    private ArrayList<WeatherMain> weatherMains;
 
-    public Post(int userId, String title, String text) {
-        this.userId = userId;
-        this.title = title;
-        this.text = text;
-        //this.id = id;
+
+    public String getName() {
+        return name;
     }
 
-    public int getUserId() {
-        return userId;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public String getTitle() {
-        return title;
+    public void setId(String id) {
+        this.id =id;
     }
 
-    public String getText() {
-        return text;
+    public Main getMain() {
+        return main;
+    }
+
+    public void setMain(Main main) {
+        this.main = main;
+    }
+
+    public ArrayList<WeatherMain> getWeatherMains() {
+        return weatherMains;
+    }
+
+    public void setWeatherMains(ArrayList<WeatherMain> weatherMains) {
+        this.weatherMains = weatherMains;
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "name='" + name + '\'' +
+                ", id='" + id + '\'' +
+                ", main=" + main +
+                ", weatherMains=" + weatherMains +
+                '}';
     }
 }
 

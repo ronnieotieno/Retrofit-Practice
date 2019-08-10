@@ -1,14 +1,15 @@
 package com.example.retrofitpractice;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import java.util.HashMap;
+import com.example.retrofitpractice.databinding.ActivityMainBinding;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -21,15 +22,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    JsonPlaceHolderApi jsonPlaceHolderApi;
-    RecyclerView recyclerView;
-    public static final String BASE_URL = "https://jsonplaceholder.typicode.com/";
+
+    private JsonPlaceHolderApi jsonPlaceHolderApi;
+    List<Post> posts;
+    private Adapter adapter;
+    int i;
+    //String h;
+    public static final String BASE_URL = "http://api.openweathermap.org/";
+    private ActivityMainBinding activityMainBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        recyclerView = findViewById(R.id.rv);
+        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        posts = new ArrayList<>();
 
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -44,106 +51,58 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
+
         getPosts();
+        // setUpAdapter();
+
+        //adapter = new Adapter(null, this);
         //createPost();
         //updatePosts();
-       // deletePost();
+        //deletePost();
     }
 
     public void getPosts() {
 
-        Map<String, String> parameters = new HashMap<>();
-        //parameters.put("userId", "1");
-        parameters.put("_sort", "id");
-        parameters.put("_order", "asc");
-
-
-        Call<List<Post>> call = jsonPlaceHolderApi.getPosts(parameters);
-
-        call.enqueue(new Callback<List<Post>>() {
+        Call<WeatherList> call = jsonPlaceHolderApi.getPosts("37.0902", "-95.7129", 50, "efbcfd06753e965bb0bc8f0850aa6c7c");
+        call.enqueue(new Callback<WeatherList>() {
             @Override
-            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+            public void onResponse(Call<WeatherList> call, Response<WeatherList> response) {
                 if (!response.isSuccessful()) {
-                    Log.d(TAG, "onResponse: getPosts" + response.code());
-                } else {
+                    Log.d(TAG, "onResponse: getPosts " + response.code());
+                }
+                //ArrayList<Post> user_array;
 
-                    List<Post> posts = response.body();
+                Log.d(TAG, "GOT THEM " + response.code());
 
-                    //posts.add(new Post(1, "yes", "no"));
+                posts = response.body().getWeather();
 
-                    if (posts != null) {
-
-                        Adapter adapter = new Adapter(posts, getApplicationContext());
-                        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                        recyclerView.setAdapter(adapter);
-                    }
+                if (posts != null) {
+                    setUpAdapter();
                 }
 
             }
 
             @Override
-            public void onFailure(Call<List<Post>> call, Throwable t) {
+            public void onFailure(Call<WeatherList> call, Throwable t) {
+
+                Log.d(TAG, "GOT THEM " + t.getMessage());
 
             }
         });
     }
 
-    public void createPost() {
 
-        Post post = new Post(1, "New Title", "New Text");
-
-        Call<Post> call = jsonPlaceHolderApi.createPost(post);
-
-        call.enqueue(new Callback<Post>() {
-            @Override
-            public void onResponse(Call<Post> call, Response<Post> response) {
-
-                Post posts = response.body();
-
-                Log.d(TAG, "onResponse: NewPosts " + response.code());
-            }
-
-            @Override
-            public void onFailure(Call<Post> call, Throwable t) {
-
-            }
-        });
-
+    private void setUpAdapter() {
+        adapter = new Adapter(posts, MainActivity.this);
+        activityMainBinding.rv.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        activityMainBinding.rv.setHasFixedSize(true);
+        activityMainBinding.rv.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
-    public void updatePosts () {
-
-        Post post = new Post (1,"NewUpdate","NewUpdate");
-
-        Call <Post> call = jsonPlaceHolderApi.putPost(2,post);
-
-        call.enqueue(new Callback<Post>() {
-            @Override
-            public void onResponse(Call<Post> call, Response<Post> response) {
-
-                Log.d(TAG, "onResponse: update " + response.code());
-            }
-
-            @Override
-            public void onFailure(Call<Post> call, Throwable t) {
-
-            }
-        });
+    public String Hey() {
+        i = 5 + 5;
+        return "Coffeyville";
     }
 
-    public  void deletePost () {
-        Call<Void> call  = jsonPlaceHolderApi.deletePost(4);
-
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.d(TAG, "onResponse: Delete with " + response.code());
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-
-            }
-        });
-    }
 }

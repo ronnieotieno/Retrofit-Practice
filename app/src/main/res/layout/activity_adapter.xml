@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Adapter">
+
+    <data>
+
+        <variable
+            name="postDisplay"
+            type="com.example.retrofitpractice.PostDisplay" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,29 +21,36 @@
         <TextView
             android:id="@+id/id"
             android:textColor="@android:color/black"
+            android:text="@{postDisplay.city}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/userid"
-            android:text="18"
+            android:text="@{postDisplay.desc}"
             android:textColor="@android:color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/email"
-            android:text="Email"
+            android:text="@{postDisplay.temp}"
             android:textSize="15sp"
             android:textColor="@android:color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <TextView
-            android:text="text"
+            android:text="@{postDisplay.id}"
             android:textColor="@android:color/black"
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/imageview"
+            android:layout_width="150dp"
+            app:imageUrl="@{postDisplay.image}"
+            android:layout_height="100dp" />
     </LinearLayout>
-</LinearLayout>
+</layout>
